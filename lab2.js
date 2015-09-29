@@ -50,18 +50,42 @@ function assert(expression, failureMessage) {
  with Dowington.
 */
 
-var hoursSpentInDowington; // TODO: assign me the value of the
+function Blob() {}
+
+var blob = new Blob();
+
+var hour = 0;
+var rate = 1;
+var dowingtonPopulation = 1000;
+while (dowingtonPopulation > 0) {
+  dowingtonPopulation = dowingtonPopulation - rate;
+  rate++;
+  hour++;
+}
+
+var hoursSpentInDowington = hour; // TODO: assign me the value of the
                            // above calculation (how long it took
                            // the blob to eat Dowington)
 
 // Now, write a method that takes a population for an arbitrary
 // town, and the starting consumption rate, and returns the number
 // of hours the blob needs to ooze its way through that town.
+Blob.prototype.hoursToOoze = function(population, peoplePerHour) {
+  this.hours = 0;
+  this.peoplePerHour = peoplePerHour;
+  this.population = population;
+  while (this.population > 0) {
+    this.population = this.population - this.peoplePerHour;
+    this.peoplePerHour++;
+    this.hours++;
+  }
+  this.totalHours = this.hours;
+  return this.totalHours;
+};
 
-function hoursToOoze(population, peoplePerHour) {
+//function hoursToOoze(population, peoplePerHour) {
   // TODO: implement me based on the instructions above.
   // Be sure to then assign me to the Blob's prototype.
-}
 
 assert(blob.hoursToOoze(0, 1) === 0, 'no people means no time needed.');
 assert(blob.hoursToOoze(1000, 1) === hoursSpentInDowington,
@@ -70,6 +94,12 @@ assert(blob.hoursToOoze(1000, 1) === hoursSpentInDowington,
 // TODO: write three more assertions like the two above, testing out
 // the hoursToOoze method.
 
+assert(blob.hoursToOoze(2000, 1) === blob.totalHours, 'blob.totalHours should',
+  'match hoursToOoze\'s result for 2000');
+assert(blob.hoursToOoze(3000, 1) === blob.totalHours, 'blob.totalHours should',
+  'match hoursToOoze\'s result for 3000');
+assert(blob.hoursToOoze(100, 1) === blob.totalHours, 'blob.totalHours should',
+  'match hoursToOoze\'s result for 100');
 //*********************************************************
 // PROBLEM 2: Universal Translator. 20 points
 //*********************************************************
@@ -85,27 +115,59 @@ var hello = {
 // speak, and method (that you'll place on the prototype) called
 // sayHello.
 
-function SentientBeing () {
+function SentientBeing(planet, language, speak) {
   // TODO: specify a home planet and a language
   // you'll need to add parameters to this constructor
+  this.planet = planet;
+  this.language = language;
+  this.speak = speak;
 }
 
 // sb is a SentientBeing object
-function sayHello (sb) {
+//function sayHello (sb) {
+SentientBeing.prototype.sayHello = function(sb) {
     // TODO: say hello prints out (console.log's) hello in the
     // language of the speaker, but returns it in the language
     // of the listener (the sb parameter above).
     // use the 'hello' object at the beginning of this exercise
     // to do the translating
-
+  console.log(this.speak);
+  return sb.speak;
     //TODO: put this on the SentientBeing prototype
-  }
+};
 
 // TODO: create three subclasses of SentientBeing, one for each
 // species above (Klingon, Human, Romulan).
 
+function Klingon() {}
+
+Klingon.prototype = new SentientBeing('Qo\'noS', 'Klingon', hello.klingon);
+
+function Human() {}
+
+Human.prototype = new SentientBeing('Earth', 'federation standard', hello['federation standard']);
+
+function Romulan() {}
+
+Romulan.prototype = new SentientBeing('Romulus', 'romulan', hello.romulan);
+
 assert((new Human()).sayHello(new Klingon()) === 'nuqneH',
   'the klingon should hear nuqneH');
+
+assert((new Human()).sayHello(new Romulan()) === 'Jolan\'tru',
+  'the romulan should hear Jolan\'tru');
+
+assert((new Klingon()).sayHello(new Human()) === 'hello',
+  'the human should hear hello');
+
+assert((new Klingon()).sayHello(new Romulan()) === 'Jolan\'tru',
+  'the romulan should hear Jolan\'tru');
+
+assert((new Romulan()).sayHello(new Klingon()) === 'nuqneH',
+  'the klingon should hear nuqneH');
+
+assert((new Romulan()).sayHello(new Human()) === 'hello',
+  'the klingon should hear hello');
 
 // TODO: write five more assertions, to complete all the possible
 // greetings between the three types of sentient beings you created above.
@@ -127,23 +189,53 @@ function lastLetterSort(stringArray) {
     // this byLastLetter function is a "compare function"
     // And check out the "comparing strings" section  here:
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
+    //return a.charAt(a.length - 1) - b.charAt(b.length - 1);
+    if ((a.charAt(a.length - 1)) < (b.charAt(b.length - 1))) {
+      return -1;
+    }
+    if ((a.charAt(a.length - 1)) > (b.charAt(b.length - 1))) {
+      return 1;
+    }
+    return 0;
   }
   stringArray.sort(byLastLetter);
+  return stringArray.sort(byLastLetter);
 }
+
+assert((lastLetterSort(['blue', 'black', 'green', 'teal', 'red'])).join() ===
+  (['red', 'blue', 'black', 'teal', 'green']).join(), 'The order is correct.');
+assert((lastLetterSort(['ab', 'ac', 'aa', 'ad', 'ae'])).join() === (['aa', 'ab',
+  'ac', 'ad', 'ae']).join(), 'The order is correct.');
 
 function sumArray(numberArray) {
   var sum = 0;
   // TODO: implement me using forEach
+  numberArray.forEach(function(element) {
+    sum += element;
+  });
   return sum;
 }
 
+assert(sumArray([1, 2, 3, 4]) === 10, 'The sum is correct.');
+assert(sumArray([1, 1, 1, 1]) === 4, 'The sum is correct.');
+
 function sumSort(arrayOfArrays) {
-  arrayOfArrays.sort(function(item) {
+  arrayOfArrays.sort(function(itemA, itemB) {
     // TODO: implement me using sumArray
     //  order the arrays based on the sum of the numbers
     //  inside each array
+    return (sumArray(itemA)) - (sumArray(itemB));
+    //if ((sumArray(itemA)) < (sumArray(itemB))) {
+    //  return -1;
+    //}
+    //if ((sumArray(itemA)) > (sumArray(itemB))) {
+    //  return 1;
+    //}
+    //return 0;
   });
 }
+
+sumSort([[66, 1000], [1], [1, 2, 3, 4], [5], [1, 88, 88, 88]]);
 
 //*********************************************************
 // PROBLEM 4: Cleanup: 10 points
